@@ -1,9 +1,12 @@
 from FileReader.ReadFile import ReadFile
+from GenoTyper.GenoType import Genotype
+
 
 def main():
-    file = ReadFile("AtypicalAllele_R1.fastq",start_flank="NTGCGACCCTGGAAAAGC", end_flank="CCCACCACCACA")
-    print(len(file.reads))
-    print(len(file.raw_reads))
+    file = ReadFile("MadeUpTest.fastq",start_flank="startflank", end_flank="endflank")
+    reads = file.reads
+    genotype = Genotype(reads)
+    print(genotype.get_repeates())
 
 if __name__== "__main__":
     main()
