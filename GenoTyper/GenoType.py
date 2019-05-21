@@ -2,10 +2,11 @@
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=3):
+    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=3, max_interrupt_tract=3):
         self.repeat_unit = repeat_unit
         self.reads = reads
         self.min_size_repeate = min_size_repeate
+        self.max_interrupt_tract = max_interrupt_tract
 
     def get_repeates(self):
         geno_table = {}
@@ -17,22 +18,31 @@ class Genotype():
         window_length = len(self.repeat_unit)
         window_inside_repeates = False
         number_of_current_repeats = 0
-
+        last_repeat_index = -1
 
         i = window_length
         while i < len(sequence): #sliding window
             window = sequence[i-window_length:i]
             if self.is_window_equals_repeat_unit(window, self.repeat_unit) and (not window_inside_repeates):
+                print(window ,self.repeat_unit)
                 window_inside_repeates = True
                 number_of_current_repeats = 1
+                last_repeat_index = i
                 i = i+2
             elif self.is_window_equals_repeat_unit(window, self.repeat_unit) and window_inside_repeates:
+                print(window ,self.repeat_unit)
                 number_of_current_repeats += 1
+                last_repeat_index = i
                 i = i+2
             elif (not(self.is_window_equals_repeat_unit(window, self.repeat_unit)) and window_inside_repeates):# or (window_inside_repeates and i == len(sequence)):
                 '''  first condition: when the repeat ends, second is when the read is finished'''
+                if i-last_repeat_index <= self.max_interrupt_tract:
+                    i += 1
+                    continue
+
                 window_inside_repeates = False
                 if number_of_current_repeats >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
+                    print("Finished")
                     self.add_repeat_to_genotable(number_of_current_repeats, geno_table)
             i +=1   
         return geno_table
