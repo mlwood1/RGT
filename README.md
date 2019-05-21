@@ -1,0 +1,2 @@
+# RGT
+Repeats Genotyping Tool
