@@ -37,11 +37,13 @@ class Genotype():
                 i = i+2 #jumb one window
             elif (not(self.is_window_equals_repeat_unit(window, self.repeat_unit)) and window_inside_repeates) or (window_inside_repeates and i == len(sequence)):
                 '''  first condition: when the repeat ends, second is when the read is finished'''
+                '''  non repeat elements found in the repeat sequence '''
                 if i-last_repeat_index <= self.max_interrupt_tract:
+                    #ignore if length is smaller than max interrupt tract
                     i += 1
                     continue
 
-                window_inside_repeates = False
+                window_inside_repeates = False #if length is larger than max interrupt tract
                 if number_of_current_repeats >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
                     self.add_repeat_to_genotable(number_of_current_repeats, geno_table)
             i +=1   
