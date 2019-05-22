@@ -1,4 +1,5 @@
 '''docstring'''
+#from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
@@ -24,17 +25,17 @@ class Genotype():
         while i < len(sequence): #sliding window
             window = sequence[i-window_length:i]
             if self.is_window_equals_repeat_unit(window, self.repeat_unit) and (not window_inside_repeates):
-                print(window ,self.repeat_unit)
+                #if window detects a repeat unit, while it is not inside a repeat sequence
                 window_inside_repeates = True
                 number_of_current_repeats = 1
                 last_repeat_index = i
-                i = i+2
+                i = i+2 #Jumb one window
             elif self.is_window_equals_repeat_unit(window, self.repeat_unit) and window_inside_repeates:
-                print(window ,self.repeat_unit)
+                #if it detects a repeat while inside the repeat sequence
                 number_of_current_repeats += 1
                 last_repeat_index = i
-                i = i+2
-            elif (not(self.is_window_equals_repeat_unit(window, self.repeat_unit)) and window_inside_repeates):# or (window_inside_repeates and i == len(sequence)):
+                i = i+2 #jumb one window
+            elif (not(self.is_window_equals_repeat_unit(window, self.repeat_unit)) and window_inside_repeates) or (window_inside_repeates and i == len(sequence)):
                 '''  first condition: when the repeat ends, second is when the read is finished'''
                 if i-last_repeat_index <= self.max_interrupt_tract:
                     i += 1
@@ -42,7 +43,6 @@ class Genotype():
 
                 window_inside_repeates = False
                 if number_of_current_repeats >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
-                    print("Finished")
                     self.add_repeat_to_genotable(number_of_current_repeats, geno_table)
             i +=1   
         return geno_table
