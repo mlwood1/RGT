@@ -5,6 +5,7 @@ class Repeat():
     def __init__(self, last_unit_index, number_of_units=1, repeat_unit="CTG"):
         self.last_unit_index = last_unit_index
         self.number_of_units = number_of_units
+        self.start_index = last_unit_index - (number_of_units*len(repeat_unit)) #for future use
 
     def add_unit(self):
         self.number_of_units +=1
