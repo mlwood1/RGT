@@ -3,7 +3,7 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=3, max_interrupt_tract=6):
+    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=1, max_interrupt_tract=6):
         self.repeat_unit = repeat_unit
         self.reads = reads
         self.min_size_repeate = min_size_repeate
@@ -23,16 +23,18 @@ class Genotype():
         repeat = None
         while i < len(sequence): #sliding window
             window = sequence[i-window_length:i]
-            if self.is_window_equals_repeat_unit(window, self.repeat_unit, repeat) and (not window_inside_repeates):
+            if self.window_enters_repeat_sequence(window, self.repeat_unit, repeat, window_inside_repeates):
                 #if window detects a repeat unit, while it is not inside a repeat sequence
                 repeat = Repeat(i, window) #creat a repeat object
                 window_inside_repeates = True
-                i = i+2 #Jumb one window
-
+                i = i+3 #Jumb one window
+                continue
+            #elif self.detect_repeat_unit_inside_repeat():
             elif self.is_window_equals_repeat_unit(window, self.repeat_unit, repeat) and window_inside_repeates:
                 #if it detects a repeat while inside the repeat sequence
                 repeat.add_unit(window,i) #add a repeat unit count
-                i = i+2 #jumb one window
+                i = i+3 #jumb one window
+                continue
 
             elif (not(self.is_window_equals_repeat_unit(window, self.repeat_unit, repeat)) and window_inside_repeates) or (window_inside_repeates and i == len(sequence)):
                 '''  first condition: when the repeat ends, second is when the read is finished'''
@@ -49,7 +51,12 @@ class Genotype():
             i +=1   
         return geno_table
    
-  
+    def window_enters_repeat_sequence(self, window, repeat_unit, repeat_object, window_inside_repeates_flag):
+        if not window_inside_repeates_flag:
+            if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
+                return True
+        return False
+
     def is_window_equals_repeat_unit(self, window, repeat_unit, repeat_object):
         mismatch = False
         for i in range(0,len(window)):
