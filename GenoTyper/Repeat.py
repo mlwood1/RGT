@@ -17,6 +17,7 @@ class Repeat():
         if window == self.repeat_unit: #perfect match
             self.number_of_units +=1
             self.number_of_units += self.unconfirmed_units_buffer #add the unconfirmed units (points with SNPs)
+            self.non_perfect_units += self.unconfirmed_units_buffer
             self.unconfirmed_units_buffer = 0 #zero the points with SNPs
             self.change_last_unit_index(index)
             self.repeat_sequence += self.unconfirmed_sequence
@@ -25,7 +26,6 @@ class Repeat():
 
         else:
             self.unconfirmed_units_buffer += 1
-            self.non_perfect_units +=1
             self.single_point_mutation_indexes.append(self.get_SNP_index(window, index))
             self.unconfirmed_sequence += window
     
