@@ -7,7 +7,7 @@ class Genotype():
         self.repeat_unit = repeat_unit
         self.reads = reads
         self.min_size_repeate = min_size_repeate
-        self.max_interrupt_tract = max_interrupt_tract
+        self.max_interrupt_tract = max_interrupt_tract + len(repeat_unit)
 
     def get_repeates(self):
         geno_table = {}
@@ -36,6 +36,7 @@ class Genotype():
                 continue
 
             elif self.non_matching_unit_within_repeat(window, self.repeat_unit, repeat):
+                #print(window,i,repeat.last_unit_index, i-repeat.last_unit_index)
                 if i-repeat.last_unit_index <= self.max_interrupt_tract:
                     #ignore if length is smaller than max interrupt tract
                     i += 1
