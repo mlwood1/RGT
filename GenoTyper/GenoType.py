@@ -29,8 +29,8 @@ class Genotype():
                 window_inside_repeates = True
                 i = i+3 #Jumb one window
                 continue
-            #elif self.detect_repeat_unit_inside_repeat():
-            elif self.is_window_equals_repeat_unit(window, self.repeat_unit, repeat) and window_inside_repeates:
+            elif self.detect_repeat_unit_inside_repeat(window, self.repeat_unit, repeat, window_inside_repeates):
+            #elif self.is_window_equals_repeat_unit(window, self.repeat_unit, repeat) and window_inside_repeates:
                 #if it detects a repeat while inside the repeat sequence
                 repeat.add_unit(window,i) #add a repeat unit count
                 i = i+3 #jumb one window
@@ -50,7 +50,12 @@ class Genotype():
 
             i +=1   
         return geno_table
-   
+    def detect_repeat_unit_inside_repeat(self, window, repeat_unit, repeat_object, window_inside_repeates_flag):
+        if window_inside_repeates_flag:
+            if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
+                return True
+        return False
+
     def window_enters_repeat_sequence(self, window, repeat_unit, repeat_object, window_inside_repeates_flag):
         if not window_inside_repeates_flag:
             if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
