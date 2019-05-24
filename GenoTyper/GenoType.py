@@ -17,7 +17,6 @@ class Genotype():
 
     def get_line_repeates(self, sequence, geno_table):
         window_length = len(self.repeat_unit)
-        window_inside_repeates = False
 
         i = window_length
         repeat = None
@@ -27,7 +26,6 @@ class Genotype():
             if self.window_enters_repeat_sequence(window, self.repeat_unit, repeat):
                 #if window detects a repeat unit, while it is not inside a repeat sequence
                 repeat = Repeat(i, window) #creat a repeat object
-                window_inside_repeates = True
                 i = i+3 #Jumb one window
                 continue
 
@@ -43,7 +41,6 @@ class Genotype():
                     i += 1
                     continue
                 #if length is larger than max interrupt tract
-                window_inside_repeates = False 
                 if repeat.number_of_units >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
                     self.add_repeat_to_genotable(repeat, geno_table)
                 repeat = None
