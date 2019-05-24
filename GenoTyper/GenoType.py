@@ -3,7 +3,7 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=3, max_interrupt_tract=6):
+    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=5, max_interrupt_tract=6):
         self.repeat_unit = repeat_unit
         self.reads = reads
         self.min_size_repeate = min_size_repeate
@@ -24,13 +24,13 @@ class Genotype():
         while i < len(sequence): #sliding window
             window = sequence[i-window_length:i]
             if self.window_enters_repeat_sequence(window, self.repeat_unit, repeat):
-                #if window detects a repeat unit, while it is not inside a repeat sequence
+                '''if window detects a repeat unit, while it is not inside a repeat sequence'''
                 repeat = Repeat(i, window) #creat a repeat object
                 i = i+3 #Jumb one window
                 continue
 
             elif self.detect_repeat_unit_inside_repeat(window, self.repeat_unit, repeat):
-                #if it detects a repeat while inside the repeat sequence
+                '''if it detects a repeat while inside the repeat sequence'''
                 repeat.add_unit(window,i) #add a repeat unit count
                 i = i+3 #jumb one window
                 continue
@@ -43,6 +43,7 @@ class Genotype():
                 #if length is larger than max interrupt tract
                 if repeat.number_of_units >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
                     self.add_repeat_to_genotable(repeat, geno_table)
+
                 repeat = None
             i +=1 
 
@@ -83,9 +84,11 @@ class Genotype():
         return True
 
     def add_repeat_to_genotable(self, repeat, geno_table):
-        number_of_repeat_units = repeat.number_of_units
-       
-        if(number_of_repeat_units in geno_table):
-            geno_table[number_of_repeat_units] += 1
-        else:
-            geno_table[number_of_repeat_units] = 1
+        if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
+            number_of_repeat_units = repeat.number_of_units
+           
+            if(number_of_repeat_units in geno_table):
+                geno_table[number_of_repeat_units] += 1
+            else:
+                geno_table[number_of_repeat_units] = 1
+
