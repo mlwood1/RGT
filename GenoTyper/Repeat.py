@@ -2,7 +2,7 @@
 
 class Repeat():
     """docstring for Genotype"""
-    def __init__(self, last_unit_index,window, number_of_units=0, repeat_units=["CTG","CAG"]):
+    def __init__(self, last_unit_index,window, number_of_units=0, repeat_units=["CTG"]):
         self.repeat_units = repeat_units
         self.last_unit_index = last_unit_index
         self.number_of_units = number_of_units

@@ -3,11 +3,11 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_unit="CTG", min_size_repeate=5, max_interrupt_tract=6):
-        self.repeat_unit = repeat_unit
+    def __init__(self, reads, repeat_units=["CTG","CAG","CCG"], min_size_repeate=5, max_interrupt_tract=0):
+        self.repeat_units = repeat_units
         self.reads = reads
         self.min_size_repeate = min_size_repeate
-        self.max_interrupt_tract = max_interrupt_tract + len(repeat_unit)
+        self.max_interrupt_tract = max_interrupt_tract + len(repeat_units[0])
 
     def get_repeates(self):
         geno_table = {}
@@ -16,26 +16,26 @@ class Genotype():
         return geno_table
 
     def get_line_repeates(self, sequence, geno_table):
-        window_length = len(self.repeat_unit)
+        window_length = len(self.repeat_units[0])
 
         i = window_length
         repeat = None
 
         while i < len(sequence): #sliding window
             window = sequence[i-window_length:i]
-            if self.window_enters_repeat_sequence(window, self.repeat_unit, repeat):
+            if self.window_enters_repeat_sequence(window, self.repeat_units, repeat):
                 '''if window detects a repeat unit, while it is not inside a repeat sequence'''
-                repeat = Repeat(i, window) #creat a repeat object
+                repeat = Repeat(i, window,repeat_units=self.repeat_units) #creat a repeat object
                 i = i+3 #Jumb one window
                 continue
 
-            elif self.detect_repeat_unit_inside_repeat(window, self.repeat_unit, repeat):
+            elif self.detect_repeat_unit_inside_repeat(window, self.repeat_units, repeat):
                 '''if it detects a repeat while inside the repeat sequence'''
                 repeat.add_unit(window,i) #add a repeat unit count
                 i = i+3 #jumb one window
                 continue
 
-            elif self.non_matching_unit_within_repeat(window, self.repeat_unit, repeat):
+            elif self.non_matching_unit_within_repeat(window, self.repeat_units, repeat):
                 #print(window,i,repeat.last_unit_index, i-repeat.last_unit_index)
                 if i-repeat.last_unit_index <= self.max_interrupt_tract:
                     #ignore if length is smaller than max interrupt tract
@@ -54,25 +54,29 @@ class Genotype():
         return geno_table
 
 
-    def non_matching_unit_within_repeat(self, window, repeat_unit,  repeat_object):
+    def non_matching_unit_within_repeat(self, window, repeat_units,  repeat_object):
         window_inside_repeates_flag = repeat_object != None
         if window_inside_repeates_flag:
-            if not(self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object)):
-                return True
-        return False    
+            for repeat_unit in repeat_units:
+                if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
+                    return False
+            return True 
+        return False   
 
-    def detect_repeat_unit_inside_repeat(self, window, repeat_unit, repeat_object):
+    def detect_repeat_unit_inside_repeat(self, window, repeat_units, repeat_object):
         window_inside_repeates_flag = repeat_object != None
         if window_inside_repeates_flag:
-            if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
-                return True
+            for repeat_unit in repeat_units:
+                if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
+                    return True
         return False
 
-    def window_enters_repeat_sequence(self, window, repeat_unit, repeat_object):
+    def window_enters_repeat_sequence(self, window, repeat_units, repeat_object): 
         window_inside_repeates_flag = repeat_object != None
         if not window_inside_repeates_flag:
-            if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
-                return True
+            for repeat_unit in repeat_units:
+                if self.is_window_equals_repeat_unit(window, repeat_unit, repeat_object):
+                    return True
         return False
 
     def is_window_equals_repeat_unit(self, window, repeat_unit, repeat_object):
