@@ -3,7 +3,7 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_units=["CTG","CAG","CCG"], min_size_repeate=5, max_interrupt_tract=0):
+    def __init__(self, reads, repeat_units=["CAA","CAG"], min_size_repeate=5, max_interrupt_tract=0):
         self.repeat_units = repeat_units
         self.reads = reads
         self.min_size_repeate = min_size_repeate
@@ -25,7 +25,7 @@ class Genotype():
             window = sequence[i-window_length:i]
             if self.window_enters_repeat_sequence(window, self.repeat_units, repeat):
                 '''if window detects a repeat unit, while it is not inside a repeat sequence'''
-                repeat = Repeat(i, window,repeat_units=self.repeat_units) #creat a repeat object
+                repeat = Repeat(sequence, i, window,repeat_units=self.repeat_units) #creat a repeat object
                 i = i+3 #Jumb one window
                 continue
 
@@ -90,10 +90,10 @@ class Genotype():
 
     def add_repeat_to_genotable(self, repeat, geno_table):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
-            number_of_repeat_units = repeat.number_of_units
-           
-            if(number_of_repeat_units in geno_table):
-                geno_table[number_of_repeat_units] += 1
+            #number_of_repeat_units = repeat.number_of_units
+            repeat_sequence = repeat.get_seq()
+            
+            if(repeat_sequence in geno_table):
+                geno_table[repeat_sequence] += 1
             else:
-                geno_table[number_of_repeat_units] = 1
-
+                geno_table[repeat_sequence] = 1

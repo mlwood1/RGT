@@ -2,7 +2,7 @@
 
 class Repeat():
     """docstring for Genotype"""
-    def __init__(self, last_unit_index,window, number_of_units=0, repeat_units=["CTG"]):
+    def __init__(self,read, last_unit_index,window, number_of_units=0, repeat_units=["CTG"]):
         self.repeat_units = repeat_units
         self.last_unit_index = last_unit_index
         self.number_of_units = number_of_units
@@ -13,6 +13,7 @@ class Repeat():
         self.repeat_sequence = ""
         self.unconfirmed_sequence = "" #sequence of non pure repeates waiting for a confirmed unit to  be added
         self.add_unit(window, last_unit_index)
+        self.read = read
 
     def add_unit(self, window, index): #index is the last base index in the sequence
         if window in self.repeat_units: #perfect match            
@@ -41,5 +42,5 @@ class Repeat():
     def get_non_perfect_units_percentage(self):
     	return self.non_perfect_units/self.number_of_units
 
-    def get_seq(self, read):
-    	return read[self.start_index:self.last_unit_index]
+    def get_seq(self):
+    	return self.read[self.start_index:self.last_unit_index]
