@@ -19,11 +19,12 @@ def main():
 
     ExcelWriter.write_to_excel(sorted_table)
 
-    #sorted_table = sorted(table.items(),reverse=True)
-    #x, y = zip(*sorted_table)
-    #print(x,y)
-    #graph = plt.plot(x,y)
-    #plt.show()
+    table = genotype.get_counts_table()
+    sorted_table = sorted(table.items(),reverse=True)
+    x, y = zip(*sorted_table)
+    print(x,y)
+    graph = plt.plot(x,y)
+    plt.show()
 
 
 if __name__== "__main__":
