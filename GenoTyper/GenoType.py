@@ -46,13 +46,13 @@ class Genotype():
                     continue
                 #if length is larger than max interrupt tract
                 if repeat.number_of_units >= self.min_size_repeate: #check that number of repeates is larger than the minimum size repeate
-                    self.add_repeat_to_genotable(repeat)
+                    self.add_repeat_to_tables(repeat)
 
                 repeat = None
             i +=1 
 
         if repeat != None and repeat.number_of_units >= self.min_size_repeate: #if sequence ends on a repeat
-            self.add_repeat_to_genotable(repeat)
+            self.add_repeat_to_tables(repeat)
 
 
 
@@ -91,6 +91,10 @@ class Genotype():
                 return False
         return True
 
+    def add_repeat_to_tables(self, repeat):
+        self.add_repeat_to_genotable(repeat)
+        self.add_repeat_to_countstable(repeat)
+
     def add_repeat_to_genotable(self, repeat):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
             #number_of_repeat_units = repeat.number_of_units
@@ -105,10 +109,10 @@ class Genotype():
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
             number_of_repeat_units = repeat.number_of_units
            
-            if(number_of_repeat_units in geno_table):
-                self.geno_table[number_of_repeat_units] += 1
+            if(number_of_repeat_units in self.counts_table):
+                self.counts_table[number_of_repeat_units] += 1
             else:
-                self.geno_table[number_of_repeat_units] = 1
+                self.counts_table[number_of_repeat_units] = 1
 
 
 
