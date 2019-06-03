@@ -137,3 +137,7 @@ class Genotype():
 
     def get_counts_table(self):
         return self.counts_table
+
+    def get_unique_counts_table(self):
+        return self.unique_counts_table
+        
