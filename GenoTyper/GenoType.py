@@ -3,7 +3,7 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_units=["CAA","CAG"], min_size_repeate=5, max_interrupt_tract=0):
+    def __init__(self, reads, repeat_units=["CTG","CCG"], min_size_repeate=5, max_interrupt_tract=5, unique_repeat_units=None):
         self.repeat_units = repeat_units
         self.reads = reads
         self.min_size_repeate = min_size_repeate
@@ -11,6 +11,10 @@ class Genotype():
         self.geno_table = {}
         self.counts_table = {}
         self.get_repeates()
+        if unique_repeat_units == None:
+            self.unique_repeat_units = self.repeat_units
+        else:
+            self.unique_repeat_units = unique_repeat_units
 
     def get_repeates(self):
 
@@ -101,9 +105,9 @@ class Genotype():
             repeat_sequence = repeat.get_seq()
             
             if(repeat_sequence in self.geno_table):
-                self.geno_table[repeat_sequence] += 1
+                self.geno_table[repeat_sequence][0] += 1
             else:
-                self.geno_table[repeat_sequence] = 1
+                self.geno_table[repeat_sequence] = [1,repeat.number_of_units]
    
     def add_repeat_to_countstable(self, repeat):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
