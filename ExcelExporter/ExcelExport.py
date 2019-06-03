@@ -15,7 +15,6 @@ class ExcelWriter():
             values = table[key]
             if isinstance(values, list): #check if the value is a single value or a list
                 for idx, val in enumerate(values):
-                    print(idx, val)
                     ws.write(row,1+idx, val)
             else:
                     ws.write(row,1, table[key])
