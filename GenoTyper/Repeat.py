@@ -53,5 +53,5 @@ class Repeat():
     	return self.read[self.start_index:self.last_unit_index]
     
     def get_seq_smart_string(self):
-        smart_string = SmartString.get_smart_string_from_sequence(self.get_seq, 3)
+        smart_string = SmartString.get_smart_string_from_sequence(self.get_seq(), 3, self.repeat_units)
         return smart_string

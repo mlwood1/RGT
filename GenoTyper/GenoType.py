@@ -106,12 +106,12 @@ class Genotype():
     def add_repeat_to_genotable(self, repeat):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
             #number_of_repeat_units = repeat.number_of_units
-            repeat_sequence = repeat.get_seq()
+            repeat_sequence = repeat.get_seq_smart_string()
             
             if(repeat_sequence in self.geno_table):
                 self.geno_table[repeat_sequence][0] += 1
             else:
-                self.geno_table[repeat_sequence] = [1,repeat.number_of_units,repeat.unique_repeat_units_count]
+                self.geno_table[repeat_sequence] = [1,repeat.number_of_units,repeat.unique_repeat_units_count,repeat.get_seq()]
    
     def add_repeat_to_countstable(self, repeat):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
@@ -140,4 +140,3 @@ class Genotype():
 
     def get_unique_counts_table(self):
         return self.unique_counts_table
-        
