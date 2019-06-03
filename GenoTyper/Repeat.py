@@ -2,7 +2,7 @@
 
 class Repeat():
     """docstring for Genotype"""
-    def __init__(self,read, last_unit_index,window, number_of_units=0, repeat_units=["CTG"]):
+    def __init__(self,read, last_unit_index,window, number_of_units=0, repeat_units=["CTG"], unique_repeat_units_list=None):
         self.repeat_units = repeat_units
         self.last_unit_index = last_unit_index
         self.number_of_units = number_of_units
@@ -12,8 +12,11 @@ class Repeat():
         self.non_perfect_units = 0
         self.repeat_sequence = ""
         self.unconfirmed_sequence = "" #sequence of non pure repeates waiting for a confirmed unit to  be added
+        self.unique_repeat_units_list = unique_repeat_units_list
+        self.unique_repeat_units_count = 0
         self.add_unit(window, last_unit_index)
         self.read = read
+
 
     def add_unit(self, window, index): #index is the last base index in the sequence
         if window in self.repeat_units: #perfect match            
@@ -30,6 +33,9 @@ class Repeat():
             self.unconfirmed_units_buffer += 1
             #self.single_point_mutation_indexes.append(self.get_SNP_index(window, index))
             self.unconfirmed_sequence += window
+
+        if window in self.unique_repeat_units_list:
+            self.unique_repeat_units_count +=1
     '''
     def get_SNP_index(self, window, index):
         for i in range(0,len(window)):
