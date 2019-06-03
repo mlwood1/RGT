@@ -1,8 +1,23 @@
 ''' docstring'''
 import xlwt
 
-class ExcelWriter(object):
+class ExcelWriter():
     """docstring for ClassName"""
+    def __init__(self):
+        self.wb = xlwt.Workbook()
+
+
+    def add_table_to_sheet(self, table, sheet_name):
+        row = 0
+        ws = self.wb.add_sheet(sheet_name)
+        for key in table.keys():
+            ws.write(row,0,key)
+            ws.write(row,1, table[key])
+            row+=1
+    
+    def save_file(self, file_name="DefaultName.xls"):
+        self.wb.save(file_name)
+
     @staticmethod	
     def write_to_excel(table, sheet_name="DefaultName", file_name="DefaultName.xls"):
         row = 0
