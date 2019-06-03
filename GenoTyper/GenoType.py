@@ -127,9 +127,9 @@ class Genotype():
             number_of_unique_repeat_units = repeat.unique_repeat_units_count
            
             if(number_of_unique_repeat_units in self.unique_counts_table):
-                self.counts_table[number_of_unique_repeat_units] += 1
+                self.unique_counts_table[number_of_unique_repeat_units] += 1
             else:
-                self.counts_table[number_of_unique_repeat_units] = 1
+                self.unique_counts_table[number_of_unique_repeat_units] = 1
 
 
     def get_geno_table(self):
