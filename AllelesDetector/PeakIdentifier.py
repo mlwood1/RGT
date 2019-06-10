@@ -14,8 +14,8 @@ class PeakIdentifier():
     def get_peaks(self):
         average = sum(self.counts_array)/len(self.counts_array)
         #print(average)
-        #print(signal.find_peaks(self.counts_array, threshold=average))
-        ans = signal.find_peaks(self.counts_array, prominence=average, distance=5)
+        #print(signal.find_peaks(self.counts_array, threshold=average, distance=1))
+        ans = signal.find_peaks(self.counts_array, prominence=average)
         #print(self.counts_array)
         #print(ans[0])
         return(ans[0])
