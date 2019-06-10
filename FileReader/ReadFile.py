@@ -13,6 +13,7 @@ class ReadFile():
             self.number_of_allowed_flank_point_mutations = number_of_allowed_flank_point_mutations
             self.reads = self.extract_reads_between_flanks()
 
+
     def get_raw_reads(self,file_name):
         text_file = open(file_name, "r")
         self.raw_reads = []
