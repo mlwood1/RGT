@@ -3,7 +3,7 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_units=["CTG","CCG"], min_size_repeate=5, max_interrupt_tract=5, unique_repeat_units=["CTG"]):
+    def __init__(self, reads, repeat_units=["CAG","CAA","CCG", "CCA","CCT"], min_size_repeate=5, max_interrupt_tract=5, unique_repeat_units=None):
         self.repeat_units = repeat_units
         self.reads = reads
         self.min_size_repeate = min_size_repeate
@@ -59,6 +59,7 @@ class Genotype():
             i +=1 
 
         if repeat != None and repeat.number_of_units >= self.min_size_repeate: #if sequence ends on a repeat
+            repeat.add_unit(window,i) #check properly
             self.add_repeat_to_tables(repeat)
 
 

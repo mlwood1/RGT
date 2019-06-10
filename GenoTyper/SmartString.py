@@ -80,10 +80,3 @@ class SmartString():
                 fast_index = new_fast_index
                 break
         return slow_index, fast_index, smart_string
-
-    
-
-        
-
-
-
