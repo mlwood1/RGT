@@ -19,21 +19,22 @@ class AllelesDetector():
         if len(matching_sequences) == 2:
             return([matching_sequences[0],matching_sequences[1], "ok hetero", str(self.peak_repeat_counts)])
         elif len(matching_sequences) >2:
-            return([matching_sequences[0], matching_sequences[1], "check, >2", str(self.peak_repeat_counts)])
+            return([matching_sequences[0], matching_sequences[1], "check, more than two potential alleles >2",
+                    str(self.peak_repeat_counts)])
         
         elif len(matching_sequences) == 1:
             new_matching_sequences = self.explore_if_a_close_allele_exists()
             if len(new_matching_sequences)==2 :
-                return([new_matching_sequences[0],new_matching_sequences[1], "ok hetero", str(self.peak_repeat_counts)])
+                return([new_matching_sequences[0],new_matching_sequences[1], "ok hetero, alleles next to each other", str(self.peak_repeat_counts)])
             
             return([matching_sequences[0], matching_sequences[0], "ok homo", str(self.peak_repeat_counts)] )
         
         elif len(matching_sequences) == 0:
             new_matching_sequences = self.explore_if_a_close_allele_exists()
             if len(new_matching_sequences)==2 :
-                return([new_matching_sequences[0],new_matching_sequences[1], "ok hetero", str(self.peak_repeat_counts)])
+                return([new_matching_sequences[0],new_matching_sequences[1], "ok hetero ||", str(self.peak_repeat_counts)])
             elif len(new_matching_sequences)==1:
-                return([new_matching_sequences[0], new_matching_sequences[0], "ok homo", str(self.peak_repeat_counts) ] )
+                return([new_matching_sequences[0], new_matching_sequences[0], "ok homo |", str(self.peak_repeat_counts) ] )
            
             return([self.sorted_geno_list[0][1][0],self.sorted_geno_list[1][1][0], "check no matching peaks", str(self.peak_repeat_counts) ])
 
@@ -44,7 +45,7 @@ class AllelesDetector():
         first_key = list(self.counts_table)[0]
         counts_min_threshold = self.counts_table[first_key]* 0.5
 
-        #adding near by points to peak
+        #adding near by points to peak list
         for number_of_repeat_counts in self.counts_table.keys():
             count = self.counts_table[number_of_repeat_counts]
            
