@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class CountsPlotter():
 
-    @static
+    @staticmethod
     def plot_counts_table(counts_table, export_directory):
         sorted_table = sorted(counts_table.items(),reverse=True)
         x, y = zip(*sorted_table)
