@@ -124,8 +124,8 @@ class AllelesDetector():
         min_threshold_abundance = most_abundant_allele_values[0] * 0.2
 
         for i in range(0,len(self.sorted_geno_list)):
-            #first index the repeat, second the values, third the repeat count            
+            #first index the repeat, second the values, third the repeat count   
             if self.sorted_geno_list[i][1][0] < min_threshold_abundance: 
-                possible_allels_list = self.sorted_geno_list[0:i]
-                break
-        return possible_allels_list
+                return self.sorted_geno_list[0:i]
+        
+        return self.sorted_geno_list
