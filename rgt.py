@@ -9,26 +9,33 @@ from joblib import Parallel, delayed, cpu_count
 
 
 class RGT():
-    def __init__(self, settings):
+    
+    def __init__(self, settings, input_directory, output_directory):
         self.settings = settings
+        self.input_directory = input_directory
+        self.output_directory = output_directory
 
     def rgt(self, sample):
         
-        print(self.settings)
         output_table = {} #dictionary to export result
 
         #sample code chopping from file + directory name
-        sample_code = sample.split("/")[1]
-        sample_code = sample_code.split(".")[0]
+        sample_code = sample.split("/")[-1]  #gets the last item after backslashes
+        sample_code = sample_code.split(".")[0] #gets file name without extension
         print(sample_code)
 
 
         #read file and extract sequence from between flanks
-        file = ReadFile(sample ,start_flank="CCACAGCCTA", end_flank="GATCGGAAGAGCACACGTCTGAACTCCAGTCAC")
+        file = ReadFile(sample ,start_flank=self.settings["start_flank"],
+                        end_flank=self.settings["end_flank"])
         reads = file.reads #extracted reads from between flanks
 
         #genotype the reads (create counts table and repeat sequence abundance table)
-        genotype = Genotype(reads,repeat_units=["CAG","CAA", "CGG", "CCG","CAT", "CAA", "AAG"], unique_repeat_units=["CAG"])
+        genotype = Genotype(reads,repeat_units=self.settings["repeat_units"],
+                            unique_repeat_units=self.settings["unique_repeat_units"],
+                            min_size_repeate=self.settings["min_size_repeate"],
+                            max_interrupt_tract=self.settings["max_interrupt_tract"])
+
         geno_table = genotype.get_geno_table() #the repeat sequence abundance table
         counts_table = genotype.get_counts_table() 
         unique_counts_table = genotype.get_unique_counts_table()
@@ -43,11 +50,11 @@ class RGT():
         excel_writer.add_table_to_sheet(sorted_geno_table,"genotype")
         excel_writer.add_table_to_sheet(sorted_counts_table,"counts")
         excel_writer.add_table_to_sheet(sorted_unique_counts_table,"unique counts")
-        excel_writer.save_file("FilesSpecificResults/"+sample_code+".xlsx")
+        excel_writer.save_file(self.output_directory + "/FilesSpecificResults/"+sample_code+".xlsx")
 
         #export plot
         table = genotype.get_counts_table()
-        CountsPlotter.plot_counts_table(table, "FilesSpecificResults/Plots/"+sample_code+".png")
+        CountsPlotter.plot_counts_table(table, self.output_directory+ "/Plots/"+sample_code+".png")
 
         #Automaticly detect allels from counts table and geom table
         a = AllelesDetector(sorted_counts_table,sorted_geno_table)

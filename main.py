@@ -1,6 +1,11 @@
-import rgt
+from rgt import RGT
 import glob
+import sys
+
 from joblib import Parallel, delayed, cpu_count
+from interface.interface import get_user_inputs
+from interface.json_parser import extract_parameters
+from ExcelExporter.ExcelExport import ExcelWriter
 
 
 def get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_dictionaries):
@@ -12,14 +17,17 @@ def get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_di
     return(output_dictionary)
 
 def main():
-    samples = glob.glob("SCAData/*.fastq")
-    list_of_output_dictionaries = Parallel(n_jobs=cpu_count(),verbose=1)(map(delayed(rgt.RGT),(samples)))
+    input_directory, output_directory, settings_file = get_user_inputs(sys.argv[1:])
+    settings = extract_parameters(settings_file)
+    samples = glob.glob(input_directory + "/*.fastq")
+    rgt_ = RGT(settings, input_directory, output_directory)
+
+    list_of_output_dictionaries = Parallel(n_jobs=cpu_count(),verbose=1)(map(delayed(rgt_.rgt),(samples)))
     output_dictionary = get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_dictionaries)
 
     collective_excel_writer = ExcelWriter()
     collective_excel_writer.add_table_to_sheet(output_dictionary,"results")
-    collective_excel_writer.save_file("results.xlsx")
-
+    collective_excel_writer.save_file(output_directory + "/ResultsSummary.xlsx")
 
 
 if __name__== "__main__":
