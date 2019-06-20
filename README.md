@@ -3,11 +3,11 @@ Repeats Genotyping Tool
 
 
 ```
-1-REST
-│─── README.md
+RGT
 │─── main.py               
 │─── RGT.py                
 │─── settings.json    
+│─── README.md
 │ 
 └──────────── interface
 │             │───  interface.py
