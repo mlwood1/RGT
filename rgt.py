@@ -47,7 +47,11 @@ class RGT():
 
         #write three tabels to excel 
         excel_writer = ExcelWriter()
-        excel_writer.add_table_to_sheet(sorted_geno_table,"genotype")
+        geno_sheet_titles = ["sequence structure", "Abundance",
+                            "Number of repeat units", "Number of unique repeat units", "Raw sequence structure"]
+        counts_table_titles = ["Number of repeat units", "Abundance"]
+        
+        excel_writer.add_table_to_sheet(sorted_geno_table,"genotype", geno_sheet_titles)
         excel_writer.add_table_to_sheet(sorted_counts_table,"counts")
         excel_writer.add_table_to_sheet(sorted_unique_counts_table,"unique counts")
         excel_writer.save_file(self.output_directory + "/FilesSpecificResults/"+sample_code+".xlsx")
