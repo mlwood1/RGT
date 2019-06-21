@@ -26,7 +26,9 @@ def main():
     output_dictionary = get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_dictionaries)
 
     collective_excel_writer = ExcelWriter()
-    collective_excel_writer.add_table_to_sheet(output_dictionary,"results")
+    results_headers = ["sample ID", "First allele structure", "Second allele structure",
+                        "Comments and Flags", "Identified peaks"]
+    collective_excel_writer.add_table_to_sheet(output_dictionary,"results", results_headers)
     collective_excel_writer.save_file(output_directory + "/ResultsSummary.xlsx")
 
 
