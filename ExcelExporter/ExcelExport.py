@@ -9,12 +9,14 @@ class ExcelWriter():
         std = self.wb.get_sheet_by_name('Sheet')
         self.wb.remove_sheet(std)
 
-    def add_table_to_sheet(self, table, sheet_name):
-        row = 1
+    def add_table_to_sheet(self, table, sheet_name, header_list):
+
         ws = self.wb.create_sheet(sheet_name)
         ws.title = sheet_name
+        self.write_table_header(ws, header_list)
 
-        for key in table.keys():
+        row = 2
+        for key in table.keys(): #put elements
             ws.cell(row=row, column=1, value=key)
             values = table[key]
             if isinstance(values, list): #check if the value is a single value or a list
@@ -28,6 +30,11 @@ class ExcelWriter():
     
     def save_file(self, file_name="DefaultName.xlsx"):
         self.wb.save(file_name)
+
+    def write_table_header(self, worksheet, header):
+        for idx, col_name in header_list: #put the table header
+            worksheet.cell(row=1, column=1+idx, value=col_name)
+
 
     @staticmethod	
     def write_to_excel(table, sheet_name="DefaultName", file_name="DefaultName.xls"):
