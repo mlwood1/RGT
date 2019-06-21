@@ -31,8 +31,9 @@ class ExcelWriter():
     def save_file(self, file_name="DefaultName.xlsx"):
         self.wb.save(file_name)
 
-    def write_table_header(self, worksheet, header):
-        for idx, col_name in header_list: #put the table header
+    def write_table_header(self, worksheet, header_list):
+        for idx, col_name in enumerate(header_list): #put the table header
+            print(idx, col_name)
             worksheet.cell(row=1, column=1+idx, value=col_name)
 
 
