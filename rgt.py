@@ -54,7 +54,7 @@ class RGT():
 
         #export plot
         table = genotype.get_counts_table()
-        CountsPlotter.plot_counts_table(table, self.output_directory+ "/Plots/"+sample_code+".png")
+        CountsPlotter.plot_counts_table(table, self.output_directory+ "/Plots/"+sample_code+".png" , sample_code)
 
         #Automaticly detect allels from counts table and geom table
         a = AllelesDetector(sorted_counts_table,sorted_geno_table)
