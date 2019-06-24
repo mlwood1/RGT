@@ -32,7 +32,7 @@ class AllelesDetector():
             #the peak could be the overlap of two peaks
             if matching_sequences[0].repeat_units_count == matching_sequences[1].repeat_units_count:
                 #message += " ,two matches with one repeat count, please check manually"
-                if (matching_sequences[0].order_in_genotable == 1) and (matching_sequences[0].order_in_genotable == 2):
+                if (matching_sequences[0].order_in_genotable == 1) and (matching_sequences[1].order_in_genotable == 2):
                     if matching_sequences[1].abundance >= 0.5* matching_sequences[0].abundance:
                         message += " ,modified case 2"
                         return([matching_sequences[0].sequence_string,matching_sequences[1].sequence_string, message,
