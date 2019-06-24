@@ -3,11 +3,14 @@ from .Repeat import Repeat
 
 class Genotype():
     """docstring for Genotype"""
-    def __init__(self, reads, repeat_units=["CAG","CAA","CCG", "CCA","CCT"], min_size_repeate=5, max_interrupt_tract=5, unique_repeat_units=None):
+    def __init__(self, reads, repeat_units=["CAG","CAA","CCG", "CCA","CCT"], min_size_repeate=5,
+                max_interrupt_tract=5, unique_repeat_units=None, grouping_repeat_units=None):
+
         self.repeat_units = repeat_units
         self.reads = reads
         self.min_size_repeate = min_size_repeate
         self.max_interrupt_tract = max_interrupt_tract + len(repeat_units[0])
+        self.grouping_repeat_units = grouping_repeat_units
         self.geno_table = {}
         self.counts_table = {}
         self.unique_counts_table = {}
@@ -107,7 +110,10 @@ class Genotype():
     def add_repeat_to_genotable(self, repeat):
         if repeat.get_non_perfect_units_percentage() <= 0.3: #only add repeates with unique percentage > 0.3
             #number_of_repeat_units = repeat.number_of_units
-            repeat_sequence = repeat.get_seq_smart_string()
+            if self.grouping_repeat_units == None:
+                repeat_sequence = repeat.get_seq_smart_string()
+            else:
+                repeat_sequence = repeat.get_grouped_string(self.grouping_repeat_units)
             
             if(repeat_sequence in self.geno_table):
                 self.geno_table[repeat_sequence][0] += 1

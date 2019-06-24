@@ -1,6 +1,6 @@
 '''docstring'''
 from .SmartString import SmartString
-
+from .GroupingString import GroupingString
 class Repeat():
     """docstring for Genotype"""
     def __init__(self,read, last_unit_index,window, number_of_units=0, repeat_units=["CTG"], unique_repeat_units_list=None):
@@ -55,4 +55,8 @@ class Repeat():
     def get_seq_smart_string(self):
         smart_string = SmartString.get_smart_string_from_sequence(self.get_seq(), 3, self.repeat_units)
         return smart_string
+
+    def get_grouped_string(self, grouping_repeat_units):
+        grouping_string = GroupingString.get_grouped_string_from_sequence(self.get_seq(),grouping_repeat_units)
+        return grouping_string
         

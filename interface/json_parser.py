@@ -25,7 +25,12 @@ def check_parameters(settings):
         settings["unique_repeat_units"]
     except Exception as e:
         settings["unique_repeat_units"] = settings["repeat_units"]
-
+   
+    try:
+        settings["grouping_repeat_units"]
+    except Exception as e:
+        settings["grouping_repeat_units"] = None
+    
     try:
         settings["min_size_repeate"]
     except Exception as e:
