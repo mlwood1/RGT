@@ -13,6 +13,12 @@ def check_input_directory(input_directory):
         print('no fastq files found in the input directory')
         sys.exit()
 
+def check_number_of_threads(number_of_threads):
+    try:
+        int(number_of_threads)
+    except Exception as e:
+        print("Please enter a valid number of threads or leave blank") 
+        sys.exit()
 
 def check_or_create_output_directory(output_directory):
     if not os.path.isdir(output_directory):

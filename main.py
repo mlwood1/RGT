@@ -17,12 +17,14 @@ def get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_di
     return(output_dictionary)
 
 def main():
-    input_directory, output_directory, settings_file = get_user_inputs(sys.argv[1:])
+    input_directory, output_directory, settings_file, number_of_threads = get_user_inputs(sys.argv[1:])
     settings = extract_parameters(settings_file)
     samples = glob.glob(input_directory + "/*.fastq")
     rgt_ = RGT(settings, input_directory, output_directory)
 
-    list_of_output_dictionaries = Parallel(n_jobs=cpu_count(),verbose=1)(map(delayed(rgt_.rgt),(samples)))
+    if number_of_threads == None:
+        number_of_threads = cpu_count()
+    list_of_output_dictionaries = Parallel(n_jobs=number_of_threads,verbose=1)(map(delayed(rgt_.rgt),(samples)))
     output_dictionary = get_collective_dictionary_from_list_of_output_dictionaries(list_of_output_dictionaries)
 
     collective_excel_writer = ExcelWriter()
