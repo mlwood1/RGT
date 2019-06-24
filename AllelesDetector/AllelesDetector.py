@@ -13,7 +13,8 @@ class AllelesDetector():
         self.possible_alleles_list = self.get_possible_alleles_list_from_sorted_geno_list()  
         peak_identifier = PeakIdentifier(counts_table)
         self.peak_repeat_counts = peak_identifier.get_peaks()
-        self.plateau = 15 #plateau to ignore small peaks in the region of the detected allele
+        self.plateau = 15 #plateau to ignore small peaks in the region of the detected allele,
+                            #in the case of the expanded alleles
 
 
     def get_alleles(self):
@@ -26,10 +27,26 @@ class AllelesDetector():
             #check if an expanded allele exists
             if self.peaks_list_has_peaks_bigger_than_genotyped_alleles(matching_sequences):
                 message += " ,expanded may exist, please check "
+           
             #check if the two matches have one count, this may mean that the peak is not a true peak
             #the peak could be the overlap of two peaks
             if matching_sequences[0].repeat_units_count == matching_sequences[1].repeat_units_count:
+                #message += " ,two matches with one repeat count, please check manually"
+                if (matching_sequences[0].order_in_genotable == 1) and (matching_sequences[0].order_in_genotable == 2):
+                    if matching_sequences[1].abundance >= 0.5* matching_sequences[0].abundance:
+                        message += " ,modified case 2"
+                        return([matching_sequences[0].sequence_string,matching_sequences[1].sequence_string, message,
+                                str(self.peak_repeat_counts)])
+                else:
+                    neighbour_seq = self.get_neighbour_seq_if_it_is_an_allele(matching_sequences[0])
+                    if neighbour_seq != None :
+                        return([matching_sequences[0].sequence_string,neighbour_seq.sequence_string,
+                            "ok hetero, alleles next to each other (The modified case ln1)", str(self.peak_repeat_counts)])
+                    
+
                 message += " ,two matches with one repeat count, please check manually"
+
+
 
             return([matching_sequences[0].sequence_string,matching_sequences[1].sequence_string, message,
                     str(self.peak_repeat_counts)])
@@ -43,32 +60,37 @@ class AllelesDetector():
         elif len(matching_sequences) == 1:
 
             #check if the next repeat is an allele
-            new_matching_sequences = self.explore_if_a_close_allele_exists()
-            if len(new_matching_sequences)==2 :
-                return([new_matching_sequences[0].sequence_string,new_matching_sequences[1].sequence_string,
-                       "ok hetero, alleles next to each other", str(self.peak_repeat_counts)])
+            neighbour_seq = self.get_neighbour_seq_if_it_is_an_allele(matching_sequences[0])
+            #new_matching_sequences = self.check_if_the_next_repeat_is_an_allele(matching_sequences[0])
+            if neighbour_seq != None :
+                return([matching_sequences[0].sequence_string,neighbour_seq.sequence_string,
+                       "ok hetero, alleles next to each other (The modified case ln2)", str(self.peak_repeat_counts)])
             
             if self.peaks_list_has_peaks_bigger_than_genotyped_alleles(matching_sequences):
-                other_allele = self.get_seq_from_geno_table_by_repeats_count(matching_sequences[0])
+                other_allele = self.get_seq_from_matching_peaks_more_than_counts_of(matching_sequences[0])
                 return([matching_sequences[0].sequence_string, other_allele.sequence_string,
                        "expanded allele detected with small count, please check", str(self.peak_repeat_counts)])
 
             message = "ok homo"
             if matching_sequences[0].repeat_units_count != self.possible_alleles_list[0][1][1]:
                 message += " most abundant repeat sequence not selected, please chek manually"
-            return([matching_sequences[0].sequence_string, matching_sequences[0].sequence_string, message, str(self.peak_repeat_counts)] )
+            return([matching_sequences[0].sequence_string, matching_sequences[0].sequence_string,
+                message, str(self.peak_repeat_counts)] )
         
         
         #Fourth case, no mathces are found
         elif len(matching_sequences) == 0:
             new_matching_sequences = self.explore_if_a_close_allele_exists()
             if len(new_matching_sequences)==2 :
-                return([new_matching_sequences[0].sequence_string ,new_matching_sequences[1].sequence_string, "ok hetero, better check", str(self.peak_repeat_counts)])
+                return([new_matching_sequences[0].sequence_string ,new_matching_sequences[1].sequence_string,
+                    "ok hetero, please check", str(self.peak_repeat_counts)])
             
             elif len(new_matching_sequences)==1:
-                return([new_matching_sequences[0].sequence_string , new_matching_sequences[0].sequence_string, "homo, please check" , str(self.peak_repeat_counts) ] )
+                return([new_matching_sequences[0].sequence_string , new_matching_sequences[0].sequence_string,
+                    "homo, please check" , str(self.peak_repeat_counts) ] )
            
-            return([self.sorted_geno_list[0][1][0],self.sorted_geno_list[1][1][0], "check no matching peaks", str(self.peak_repeat_counts) ])
+            return([self.sorted_geno_list[0][1][0],self.sorted_geno_list[1][1][0],
+                "check no matching peaks", str(self.peak_repeat_counts) ])
 
     def peaks_list_has_peaks_bigger_than_genotyped_alleles(self, matching_sequences):
 
@@ -82,16 +104,43 @@ class AllelesDetector():
                 return True
         
         return False
+  
 
-    def get_seq_from_geno_table_by_repeats_count(self, matching_sequence):
+    def get_neighbour_seq_if_it_is_an_allele(self, matched_sequence):
+        candidate_sequence_count = matched_sequence.repeat_units_count+1
+        candidate_sequence = self.get_seq_possible_alleles_list_by_repeats_count(candidate_sequence_count,
+                                                                    self.possible_alleles_list)
+        if (candidate_sequence == None) or (candidate_sequence.abundance < (matched_sequence.abundance*0.5)):
+            return None
+
+        sequence_smaller_than_matched_seq_count = matched_sequence.repeat_units_count-1
+        sequence_smaller_than_matched_seq = self.get_seq_possible_alleles_list_by_repeats_count(
+                                                                sequence_smaller_than_matched_seq_count,
+                                                                    self.sorted_geno_list)
+
+        if candidate_sequence.abundance > sequence_smaller_than_matched_seq.abundance*1.1 :
+            return candidate_sequence
+
+        return None
+
+
+    def get_seq_possible_alleles_list_by_repeats_count(self, count, given_list):
+        for idx, possibe_allele in enumerate(given_list):
+            if (possibe_allele[1][1]) == count:
+                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1], possibe_allele[1][0], idx)
+                return matching_sequence
+        return None
+
+
+    def get_seq_from_matching_peaks_more_than_counts_of(self, matching_sequence):
         detected_peak = matching_sequence.repeat_units_count
         repeat_counts_bigger_than_detected_allele = [x for x in self.peak_repeat_counts if x >= detected_peak+self.plateau]
         
-        for possibe_allele in self.sorted_geno_list:
+        for idx, possibe_allele in enumerate(self.sorted_geno_list):
             if (possibe_allele[1][1]) in repeat_counts_bigger_than_detected_allele:
-                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1])
+                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1], possibe_allele[1][0], idx)
                 return matching_sequence
-        return MatchingSequence("can't find the other allele", 0) #this line should be impossible to reach
+        return MatchingSequence("can't find the other allele", 0, 0, 0) #this line should be impossible to reach
 
 
     def explore_if_a_close_allele_exists(self):
@@ -111,18 +160,18 @@ class AllelesDetector():
                 new_peak_repeat_counts.append(number_of_repeat_counts)
       
         #checking if a match happens with the near by points, now identified as new peaks
-        for possibe_allele in self.possible_alleles_list:
+        for idx, possibe_allele in enumerate(self.possible_alleles_list):
             if (possibe_allele[1][1]) in new_peak_repeat_counts:
-                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1])
+                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1], possibe_allele[1][0], idx)
                 new_matching_sequences.append(matching_sequence)
         return new_matching_sequences
         
 
     def get_matches_between_peaks_and_possible_alleles_list(self):
         matching_sequences = []
-        for possibe_allele in self.possible_alleles_list:
-            if (possibe_allele[1][1]) in self.peak_repeat_counts:
-                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1])
+        for idx, possibe_allele in enumerate(self.possible_alleles_list):
+            if possibe_allele[1][1] in self.peak_repeat_counts:
+                matching_sequence = MatchingSequence(possibe_allele[0], possibe_allele[1][1], possibe_allele[1][0], idx)
                 matching_sequences.append(matching_sequence)
         return matching_sequences
     
