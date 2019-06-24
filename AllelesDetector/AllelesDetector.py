@@ -19,21 +19,30 @@ class AllelesDetector():
     def get_alleles(self):
         matching_sequences = self.get_matches_between_peaks_and_possible_alleles_list()
 
+
+        #First case, when 2 matches identified
         if len(matching_sequences) == 2:
-            message = "ok hetero"
+            message = "Heterozygous"
+            #check if an expanded allele exists
             if self.peaks_list_has_peaks_bigger_than_genotyped_alleles(matching_sequences):
                 message += " ,expanded may exist, please check "
-
+            #check if the two matches have one count, this may mean that the peak is not a true peak
+            #the peak could be the overlap of two peaks
             if matching_sequences[0].repeat_units_count == matching_sequences[1].repeat_units_count:
                 message += " ,two matches with one repeat count, please check manually"
 
-            return([matching_sequences[0].sequence_string,matching_sequences[1].sequence_string, message , str(self.peak_repeat_counts)])
-        
-        elif len(matching_sequences) >2:
-            return([matching_sequences[0].sequence_string, matching_sequences[1].sequence_string, "check, more than two potential alleles >2",
+            return([matching_sequences[0].sequence_string,matching_sequences[1].sequence_string, message,
                     str(self.peak_repeat_counts)])
         
+        #Second case, more than two matches, faulty read
+        elif len(matching_sequences) >2:
+            return([matching_sequences[0].sequence_string, matching_sequences[1].sequence_string,
+                    "check, more than two potential alleles >2", str(self.peak_repeat_counts)])
+        
+        #Third case, one peak is identified
         elif len(matching_sequences) == 1:
+
+            #check if the next repeat is an allele
             new_matching_sequences = self.explore_if_a_close_allele_exists()
             if len(new_matching_sequences)==2 :
                 return([new_matching_sequences[0].sequence_string,new_matching_sequences[1].sequence_string,
@@ -50,7 +59,7 @@ class AllelesDetector():
             return([matching_sequences[0].sequence_string, matching_sequences[0].sequence_string, message, str(self.peak_repeat_counts)] )
         
         
-
+        #Fourth case, no mathces are found
         elif len(matching_sequences) == 0:
             new_matching_sequences = self.explore_if_a_close_allele_exists()
             if len(new_matching_sequences)==2 :
