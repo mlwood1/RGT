@@ -27,7 +27,8 @@ class RGT():
 
         #read file and extract sequence from between flanks
         file = ReadFile(sample ,start_flank=self.settings["start_flank"],
-                        end_flank=self.settings["end_flank"])
+                        end_flank=self.settings["end_flank"],
+                        discard_reads_with_no_end_flank=self.settings["discard_reads_with_no_end_flank"])
         reads = file.reads #extracted reads from between flanks
 
         #genotype the reads (create counts table and repeat sequence abundance table)

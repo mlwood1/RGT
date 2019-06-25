@@ -3,7 +3,8 @@
 class ReadFile():
     """docstring for main"""
    
-    def __init__(self, file_name, start_flank=None, end_flank=None, number_of_allowed_flank_point_mutations=1):
+    def __init__(self, file_name, start_flank=None, end_flank=None,
+                number_of_allowed_flank_point_mutations=1, discard_reads_with_no_end_flank=True):
         self.get_raw_reads(file_name)
         if start_flank == None and end_flank == None:
             self.reads = self.raw_reads
@@ -11,6 +12,7 @@ class ReadFile():
             self.start_flank = start_flank
             self.end_flank = end_flank
             self.number_of_allowed_flank_point_mutations = number_of_allowed_flank_point_mutations
+            self.discard_reads_with_no_end_flank = discard_reads_with_no_end_flank
             self.reads = self.extract_reads_between_flanks()
 
 
@@ -30,7 +32,7 @@ class ReadFile():
         for line in self.raw_reads: #loop through all raw reads line by line
             seq_start_index = -1
             seq_end_index = -1
-
+            end_flank_found = False
             for i in range(start_flank_length, len(line)-end_flank_length): #loop through the read searching for the start flank
                 current_window = line[i-start_flank_length:i]
                 if self.flank_equal(current_window, self.start_flank): #start flank found
@@ -43,8 +45,14 @@ class ReadFile():
                 current_window = line[i:i+end_flank_length]
                 if self.flank_equal(current_window,self.end_flank):
                     seq_end_index = i
+                    end_flank_found = True
                     break
-            reads.append(line[seq_start_index:seq_end_index])
+
+            if end_flank_found or not(self.discard_reads_with_no_end_flank):
+                reads.append(line[seq_start_index:seq_end_index])
+
+
+            
         return reads
     
     def flank_equal(self, window, flank):

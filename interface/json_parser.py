@@ -1,5 +1,6 @@
 import json
 import sys
+import distutils
 
 def extract_parameters(json_file):
     with open(json_file) as json_file:  
@@ -19,7 +20,8 @@ def check_parameters(settings):
         settings["end_flank"]
     except Exception as e:
         print("Warning: no flanking sequence is selected")
-        settings["start_flank"] = settings ["end_flank"] = None
+        settings["start_flank"] = None
+        settings ["end_flank"] = None
 
     try:
         settings["unique_repeat_units"]
@@ -41,3 +43,7 @@ def check_parameters(settings):
     except Exception as e:
         settings["max_interrupt_tract"] = 5
 
+    try:
+        settings["discard_reads_with_no_end_flank"] = distutils.util.strtobool((settings["discard_reads_with_no_end_flank"]))
+    except Exception as e:
+        settings["discard_reads_with_no_end_flank"] = True
