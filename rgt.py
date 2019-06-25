@@ -65,6 +65,7 @@ class RGT():
         #Automaticly detect allels from counts table and geom table
         a = AllelesDetector(sorted_counts_table,sorted_geno_table)
         output_table[sample_code] = a.get_alleles()
+        output_table[sample_code].append(file.get_discarded_reads_percentage())
 
 
         return(output_table)

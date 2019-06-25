@@ -29,7 +29,7 @@ def main():
 
     collective_excel_writer = ExcelWriter()
     results_headers = ["sample ID", "First allele structure", "Second allele structure",
-                        "Comments and Flags", "Identified peaks"]
+                        "Comments and Flags", "Identified peaks", "Discarded reads percentage"]
     collective_excel_writer.add_table_to_sheet(output_dictionary,"results", results_headers)
     collective_excel_writer.save_file(output_directory + "/ResultsSummary.xlsx")
 

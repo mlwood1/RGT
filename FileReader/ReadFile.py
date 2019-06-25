@@ -6,6 +6,7 @@ class ReadFile():
     def __init__(self, file_name, start_flank=None, end_flank=None,
                 number_of_allowed_flank_point_mutations=1, discard_reads_with_no_end_flank=True):
         self.get_raw_reads(file_name)
+        self.number_of_discarded_reads = 0
         if start_flank == None and end_flank == None:
             self.reads = self.raw_reads
         else:
@@ -39,6 +40,7 @@ class ReadFile():
                     seq_start_index = i 
                     break
             if seq_start_index == -1: #no start flank found
+                self.number_of_discarded_reads += 1
                 continue #skip the checking for the end flank
 
             for i in range(seq_start_index,len(line)-end_flank_length+1): #loop through the remaining of the read searching for the end flank
@@ -50,6 +52,8 @@ class ReadFile():
 
             if end_flank_found or not(self.discard_reads_with_no_end_flank):
                 reads.append(line[seq_start_index:seq_end_index])
+            else:
+                self.number_of_discarded_reads += 1
 
 
             
@@ -63,3 +67,9 @@ class ReadFile():
                 if current_mismatches > self.number_of_allowed_flank_point_mutations:
                     return False             
         return True
+
+    def get_discarded_reads_percentage(self):
+        percentage = self.number_of_discarded_reads / len(self.raw_reads)
+        percentage *= 100
+        percentage = str(percentage) + "%"
+        return percentage
