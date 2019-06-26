@@ -8,7 +8,7 @@ class CountsPlotter():
         sorted_table = sorted(counts_table.items(),reverse=True)
         x, y = zip(*sorted_table)
         
-        x_ticks_scaling_factor = (len(x)//40)+1
+        x_ticks_scaling_factor = (max(x)//40)+1
 
 
         graph = plt.bar(x,y, align='center', alpha=0.5)
