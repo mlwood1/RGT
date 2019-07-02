@@ -18,7 +18,7 @@ class AllelesDetector():
         self.first_allele = None
         self.second_allele = None
         self.result_summery = self.predict_alleles()
-        if self.first_allele.repeat_units_count < minimum_no_of_reads:
+        if self.first_allele.abundance < minimum_no_of_reads:
             self.color_code = "red"
             self.result_summery[2] = "Number of reads is lower than threshold"
 
