@@ -63,7 +63,7 @@ class RGT():
             a = AllelesDetector(sorted_counts_table, sorted_geno_table, self.settings["minimum_no_of_reads"])
             output_table[sample_code] = a.result_summery
             discarded_reads_percentage = file.get_discarded_reads_percentage()
-            output_table[sample_code].append(str(discarded_reads_percentage)+"%")
+            output_table[sample_code].append(str(round(discarded_reads_percentage, 1)))
 
             #export plot
             table = genotype.get_counts_table()

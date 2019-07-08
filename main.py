@@ -33,7 +33,7 @@ def main():
     color_code_dictionary = get_collective_dictionary_from_list_of_output_dictionaries(color_table)
     collective_excel_writer = ExcelWriter()
     results_headers = ["sample ID", "First allele structure", "Second allele structure",
-                        "Comments and Flags", "Identified peaks", "Discarded reads percentage"]
+                        "Comments and Flags", "Identified peaks", "Discarded reads percentage %"]
     collective_excel_writer.add_table_to_sheet(output_dictionary,"results", results_headers,
                             color_table=color_code_dictionary, colored_cell_index=4)
     collective_excel_writer.save_file(output_directory + "/ResultsSummary.xlsx")
