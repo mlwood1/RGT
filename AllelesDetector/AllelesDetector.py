@@ -13,8 +13,6 @@ class AllelesDetector():
         self.possible_alleles_list = self.get_possible_alleles_list_from_sorted_geno_list()  
         peak_identifier = PeakIdentifier(counts_table)
         self.peak_repeat_counts = peak_identifier.get_peaks()
-        self.plateau = 15 #plateau to ignore small peaks in the region of the detected allele,
-                            #in the case of the expanded alleles
         self.first_allele = None
         self.second_allele = None
         self.result_summery = self.predict_alleles()
@@ -124,11 +122,11 @@ class AllelesDetector():
 
     def peaks_list_has_peaks_bigger_than_genotyped_alleles(self, matching_sequences):
 
-        largest_detected_peak = matching_sequences[0].repeat_units_count+self.plateau
+        largest_detected_peak = matching_sequences[0].repeat_units_count
        
         for matching_sequence in matching_sequences:
             if matching_sequence.repeat_units_count > largest_detected_peak:
-                largest_detected_peak = matching_sequence.repeat_units_count+self.plateau
+                largest_detected_peak = matching_sequence.repeat_units_count
         for peak in self.peak_repeat_counts:
             if peak > largest_detected_peak:
                 return True
@@ -164,7 +162,7 @@ class AllelesDetector():
 
     def get_seq_from_matching_peaks_more_than_counts_of(self, matching_sequence):
         detected_peak = matching_sequence.repeat_units_count
-        repeat_counts_bigger_than_detected_allele = [x for x in self.peak_repeat_counts if x >= detected_peak+self.plateau]
+        repeat_counts_bigger_than_detected_allele = [x for x in self.peak_repeat_counts if x >= detected_peak]
         
         for idx, possibe_allele in enumerate(self.sorted_geno_list):
             if (possibe_allele[1][1]) in repeat_counts_bigger_than_detected_allele:
