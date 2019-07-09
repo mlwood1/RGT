@@ -19,6 +19,7 @@ def get_bool_value_from_string(given_string):
 def check_parameters(settings):
     try:
         settings["repeat_units"]
+        settings["repeat_units"].sort(key=len,reverse=True)
     except Exception as e:
         print("list of repeat units should be provided")
         sys.exit()
@@ -33,11 +34,13 @@ def check_parameters(settings):
 
     try:
         settings["unique_repeat_units"]
+        settings["unique_repeat_units"].sort(key=len,reverse=True)
     except Exception as e:
         settings["unique_repeat_units"] = settings["repeat_units"]
    
     try:
         settings["grouping_repeat_units"]
+        settings["grouping_repeat_units"].sort(key=len,reverse=True)
     except Exception as e:
         settings["grouping_repeat_units"] = None
     
