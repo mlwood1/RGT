@@ -27,10 +27,14 @@ RGT
 │             │───  GenoType.py
 │             │───  Repeat.py
 │             │───  SmartString.py
+│             │───  GroupingString.py
+│             │───  revComplementry.py
 │             └───  __init__.py
 │ 
-└──────────── CountsPlotter
-│             │───  CountsPlotter.py    
+└──────────── graphsplotter
+│             │───  plotter.py
+│             │───  table_2d_plotter.py   
+│             │───  plot_3D.py
 │             └───  __init__.py
 │ 
 └──────────── AllelesDetector
