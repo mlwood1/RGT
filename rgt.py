@@ -1,8 +1,9 @@
 from FileReader.ReadFile import ReadFile
-from GenoTyper.GenoType import Genotype
+from GenoTyper.GenoType import Genotype, get_rev_complementry
+
 from ExcelExporter.ExcelExport import ExcelWriter
 from AllelesDetector.AllelesDetector import AllelesDetector
-from CountsPlotter.CountsPlotter import plot_counts_table
+from graphsplotter.plotter import plot_graphs
 
 import glob
 from joblib import Parallel, delayed, cpu_count
@@ -30,14 +31,8 @@ class RGT():
                             end_flank=self.settings["end_flank"],
                             discard_reads_with_no_end_flank=self.settings["discard_reads_with_no_end_flank"])
             reads = file.reads #extracted reads from between flanks
-
             #genotype the reads (create counts table and repeat sequence abundance table)
-            genotype = Genotype(reads,repeat_units=self.settings["repeat_units"],
-                                unique_repeat_units=self.settings["unique_repeat_units"],
-                                min_size_repeate=self.settings["min_size_repeate"],
-                                max_interrupt_tract=self.settings["max_interrupt_tract"],
-                                grouping_repeat_units=self.settings["grouping_repeat_units"],
-                                reverse_strand=self.settings["reverse_strand"])
+            genotype = Genotype(reads,self.settings)
 
             geno_table = genotype.get_geno_table() #the repeat sequence abundance table
             counts_table = genotype.get_counts_table() 
@@ -50,8 +45,14 @@ class RGT():
 
             #write three tabels to excel 
             excel_writer = ExcelWriter()
+            if self.settings["3D_plot_parameters"] != None:
+                xlabel =' , '.join(self.settings["3D_plot_parameters"]["x_units"]) + " count"
+                zlabel =' , '.join(self.settings["3D_plot_parameters"]["z_units"]) + " count"
+            else:
+                xlabel = "x axis units count for 3D plots, not applicable"
+                zlabel = "z axis units count for 3D plots, not applicable"
             geno_sheet_titles = ["sequence structure", "Abundance",
-                                "Number of repeat units", "Number of unique repeat units", "Raw sequence structure"]
+                                "Number of repeat units",xlabel , zlabel, "Number of unique repeat units", "Raw sequence structure"]
             counts_table_titles = ["Number of repeat units", "Abundance"]
 
             excel_writer.add_table_to_sheet(sorted_geno_table,"genotype", geno_sheet_titles)
@@ -66,15 +67,13 @@ class RGT():
             output_table[sample_code].append(str(round(discarded_reads_percentage, 1)))
 
             #export plot
-            table = genotype.get_counts_table()
-            plot_directory = self.output_directory+ "/Plots/"+sample_code+".png"
-            plot_counts_table(table, plot_directory, sample_code,
-                    a.first_allele, a.second_allele, color_code=a.color_code)
+            plot_graphs(self.settings, genotype,self.output_directory, sample_code, a.first_allele, a.second_allele, a.color_code)
 
             color_table[sample_code] = {4:a.color_code}
             self.color_code_discarded_reads_percntg(color_table, discarded_reads_percentage,sample_code)
 
         except Exception as e:
+            #print(e)
             print("can not genotype " + sample_code)
             output_table[sample_code] = ["can not get allele","can not get allele","Error","[]","!"]
             color_table[sample_code] = {1:"red", 4:"red", 6:"red"}
