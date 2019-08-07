@@ -1,7 +1,7 @@
 # RGT
 Repeats Genotyping Tool
 
-## This is a developers guide, if you are looking for a user manual: sorry i did not make one yet
+## This is a developers guide, if you are looking for a user manual: sorry I did not make one yet
 
 RGT is a software to:
 1. Extract strucutre from fastq files representing targeted sequencing samples of SSRs (simple sequence repeats)
@@ -9,7 +9,7 @@ RGT is a software to:
 
 ## The approach taken here is an alignment free approach
 * Because targeted sequencing gives thousands of reads, why do alignment
-* We just extract structures and get the most repeating one
+* We just extract structures and get the most repeating ones
 * This of course means you are loosing a percentage of the reads as any sequencing error will result in a mistakenly identified structure, but who cares if you have tens of thousands of reads
 
 ## Strucutres are identified by the expected repeating units identified by the user
