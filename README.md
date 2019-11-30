@@ -1,7 +1,7 @@
 # RGT
 Repeats Genotyping Tool
 
-## This is a developers guide, if you are looking for a user manual:Finaly it's [here](https://github.com/hossam26644/RGT/wiki)
+## This is a developers guide, if you are looking for a user manual: Finaly it's [here](https://github.com/hossam26644/RGT/wiki)
 
 RGT is a software to:
 1. Extract strucutre from fastq files representing targeted sequencing samples of SSRs (simple sequence repeats)
