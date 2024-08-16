@@ -1,25 +1,34 @@
 # RGT
 Repeats Genotyping Tool
 
-## This is a developers guide, if you are looking for a user manual: Finaly it's [here](https://github.com/hossam26644/RGT/wiki)
+## This is a developers guide, if you are looking for a user manual it's [here](https://github.com/hossam26644/RGT/wiki)
 
 RGT is a software to:
-1. Extract strucutre from fastq files representing targeted sequencing samples of SSRs (simple sequence repeats)
-2. Export the identified germline alleles of the sample (assuming it is a human sample)
+1. Extract structure from fastq files representing targeted sequencing samples of SSRs (simple sequence repeats)
+2. Export the identified germline/inherited alleles of the sample (assuming it is a human sample)
 
-## The approach taken here is an alignment free approach
+## System requirement
+To run the RGT executable on Mac you need: macOS 12.7.5 or above plus the macOS RGT executable available [here](https://sourceforge.net/projects/rgt/files/macOS/)
+
+To run the RGT executable on linux you need: Ubuntu 18.10 or above plus the linux RGT executable available [here](https://sourceforge.net/projects/rgt/files/Linux/). We have only tested RGT on Ubuntu but it should also run fine on other linux OS.
+
+If you are planning to run it from the source code, the software dependencies are listed in [requirements.txt](https://github.com/hossam26644/RGT/blob/master/requirements.txt)
+
+no non-standard harware required to run RGT
+
+## The approach taken here is an alignment-free approach
 * Because targeted sequencing gives thousands of reads, why do alignment
 * We just extract structures and get the most repeating ones
-* This of course means you are loosing a percentage of the reads as any sequencing error will result in a mistakenly identified structure, but who cares if you have tens of thousands of reads
+* This of course means you are loosing a percentage of the reads as any sequencing error will result in a mistakenly identified repeat structure, but who cares if you have tens of thousands of reads
 
-## Strucutres are identified by the expected repeating units identified by the user
-* strucutres are stored with their number of repeating units
-* A graph of the number of repeating units count and the abundance of samples having the same count is plotted
-* Peaks from this graph is used to identified the germline alleles
+## Structures are identified by the expected repeating units defined by the user
+* structures are stored with their number of repeating units
+* A graph of the number of repeating units count and the abundance of allele structures having the same count is plotted
+* Peaks from this graph are used to identify the modal alleles which are assumed to correspond to the germline/inherited alleles
 
-> Every structure identified is stored regardless of the sequencing errors and variations and exported in a separate excel file for the user
-![Semantic description of image](https://github.com/hossam26644/RGT/blob/enh/pep8/ImagesForReadme/CountsPlot.png "Example of a a counts plot")*Example of a a counts plot*
-##### The most abundant repeat strucutres are matched with the peaks identified in the "repeating units count vs structures having this count plot" to get the two human germline alleles
+> Every allele structure identified is stored regardless of the sequencing errors and variations and exported in a separate excel file for the user
+![Semantic description of image](https://github.com/hossam26644/RGT/blob/enh/pep8/ImagesForReadme/CountsPlot.png "Example of a a counts plot")*Example of a counts plot*
+##### The most abundant repeat structures are matched with the peaks identified in the "repeating units count vs structures having this count plot" to get the two human germline alleles
 
 ## lets get to the developers guide:
 #### first the strucutre of the software:
@@ -76,8 +85,8 @@ RGT
 * **filereader** parses fastq files and extracts the reads:
   * it searches for the flanking sequences and extract reads from between these flanks
   * flanking sequence match is identified when a sequence has a [hamming distance](https://en.wikipedia.org/wiki/Hamming_distance) of one or zero with the flank
-  * when there is no upstream flank found (if uyser specified a start flank) the whole read is discarded
-  * if the user specidfies to discard reads when there is no down stream flank.. and no down stream flank is found: guess what, the read is discarded
+  * when there is no upstream flank (i.e. start_flank in settings file) found (if user specified a start_flank) the whole read is discarded
+  * if the user specifies to discard reads when there is no downstream flank (i.e. end_flank in settings file).. and no downstream flank is found: guess what, the read is discarded
   * The percentage of the discarded reads is calculated and the sample is flagged if this percentage is greater than a threshold identified by the user (or default value set by the software)
   
 ## The genotyper:
@@ -87,7 +96,7 @@ It is the package that is responisble for extracting the repeat structure from r
   * **revComplementary**: computes the reverse complement of a sequence, it's only useful if the user is working on the reverse strand
   * **GroupingString**: groups a sequence by the user input grouping units 
   e.g *CAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAGCAACAGCCGCCACCGCCGCCGCCGCCGCCGCCGCCGCCGCCGCCTCCT* is grouped to *[CAG]15[CAACAG]1[CCGCCA]1[CCG]10[CCT]2* when the user input grouping units are: CAG CAACAG CCGCCA CCG CCT
-    * grouping is done by a sliding windows that identifies the user input units then slides to count them, eventualy it substitutes the repeating units with one unit between square brackets and the number of copies of this unit 
+    * grouping is done by using a sliding windows that identifies the user input units then slides to count them, eventualy it substitutes the repeating units with one unit between square brackets and the number of copies of this unit 
   * **SmartString** does the grouping when the user identifies no grouping units, 
     >it uses a slow runner fast runner algorithm, where a slow runner sliding window identifies repeat units, and the fast runner window counts the repeating units. This code is executed recursively on ungrouped parts of the sequence with increasing window size to detect larger repeating units. The stopping condition is to have a window size larger than half the sequence length -because there will be no possibility to have a longer repeating unit-.
     
@@ -97,7 +106,7 @@ It is the package that is responisble for extracting the repeat structure from r
 ### Now how the repeat strucutre is identified (in the GenoTyper module):
   * The detection of the first unit creates a repeat object, this object stores the start index of the repeat sequence.
   * Each detected repeat unit is inserted in the repeat object, where the count of repeat units is incremented, and the end index of the repeat sequence is shifted to the index of the last inserted repeat unit.
-  * Units having one mismatch with one of the repeat units are considered, to compensate expected sequencing errors, they are inserted in a buffer (temporary storage) that is flushed to the repeat object if another repeat unit exists after them
+  * Units having one mismatch with one of the repeat units are considered; to compensate expected sequencing errors, they are inserted in a buffer (temporary storage) that is flushed to the repeat object if another repeat unit exists after them
  
  ![Semantic description of image](https://github.com/hossam26644/RGT/blob/enh/pep8/ImagesForReadme/Repeatunits.png "adding repeat units")*Identifying the start index and the end index of a repeat sequence, including a unit with mismatch within the sequence structure (GTG in a CTG repeat) , green arrow represents the identified repeat sequence start index, blue arrow represents the end index of the identified repeat sequence, red curly bracket represents the sliding window identifying repeat units*
   
@@ -106,7 +115,7 @@ It is the package that is responisble for extracting the repeat structure from r
 
 Now the repeat sequence is identified, and the number of repeat units is counted in every one of them
 
-  * Identified repeat sequences are inserted in a hashtable (a python dictionary), key is the strucutre and the value is the number of reads having the same structures
+  * Identified repeat sequences are inserted in a hashtable (a python dictionary), key is the structure and the value is the number of reads having the same structures
 * Simultaneously another table is created (count table), where the key is the number of units in a structure, and the value is the number of reads having this number of units
   
   
@@ -123,7 +132,7 @@ Now the repeat sequence is identified, and the number of repeat units is counted
   ```
 
 
-└──────────── Zero mtaches
+└──────────── Zero matches
 │             │
 │             └───  Error can't genotype
 │ 
@@ -135,11 +144,11 @@ Now the repeat sequence is identified, and the number of repeat units is counted
 │
 └──────────── 2 matches
 │             │
-│             └───  is the most abundant strucutre not matched with a peak?
+│             └───  is the most abundant structure not matched with a peak?
 │             |       │
 │             |       └─── flag the sample
 │             | 
-│             └───  do both sequences have the same repeat units count
+│             └───  do both sequences have the same repeat units count?
 |             |       |   (peak may be a result of overlapping two less abundant 
 │             |       │    structures in the sample)
 │             |       │
@@ -152,28 +161,28 @@ Now the repeat sequence is identified, and the number of repeat units is counted
 └──────────── one match
               │
               └───  Check expanded allele 
-              |       | (there is a peak and there is no strucutre matching             
+              |       | (there is a peak and there is no structure matching             
               |       │  in the most abundant structures list) 
               |       │              
-              |       └─── flag the sample, export the most abundant strucutre 
+              |       └─── flag the sample, export the most abundant structure 
               |            outside the list, matching the peak as the second allele
               |    
               └───  Check tandem alleles
               |       | (the n+1 structure is more abundant than the n-1  
-              |       |  where n is the identified allele)     
+              |       |  where n is the identified modal allele)     
               |       |              
-              |       | (n+1 represents the first somatic variability, n-1 the first
-              |       |  PCR slippage result, theoritically the first is less abundant
+              |       | (n+1 represents the first somatic variant, n-1 the first
+              |       |  PCR slippage variant, theoretically the first is less abundant
               |       |  unless it is an allele)     
               |       |              
-              |       └─── Export the n+1 strucutre as the second allele          
+              |       └─── Export the n+1 structure as the second allele          
               |    
               └───  Export the identified allele as the homozygous allele of the sample              
               
 
 ```
 ## Plotting (graphsplotter package):
-* The plotter module prepares data to be plotted, methods and vairables names should be clear enough that I dont have to explain them
+* The plotter module prepares data to be plotted, methods and variables names should be clear enough that I dont have to explain them
 * table_2d_plotter module does what you think it does, it plots a table in a 2d graph, currently it is used twice, for the total counts plot and for the specified units count
 * plot_3D module plots the 3d plot of 2 counts vs each other vs the abundance of samples having these counts
   * these counts are in the table_3d in the genotype object
