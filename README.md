@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/187811748.svg)](https://doi.org/10.5281/zenodo.14865580)
+
 # RGT
 Repeats Genotyping Tool
 
